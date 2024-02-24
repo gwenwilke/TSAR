@@ -1,1 +1,0 @@
-# TSAR Lecture 1
