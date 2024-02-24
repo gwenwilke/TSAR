@@ -172,6 +172,7 @@ my_plot_displ_hwy_year +
 #         It is the 95%-confidence interval around the trendline: a true observation will lie within this band around the trendline prediction with a probability of 95%.
 #         It thus means that there is a lot of uncertainty involved in producing the trendline. (We don't know why yet, but we will come back to that later.)
 #       - lincols, pontiac and subaru look weird as well: its not clear why no trendline is shown at all. (We will come back to this as well!)
+#       - volkswagen is also bit weird. It makes an unmotivated dip at approximately x=2 that does not seem to correspond to any of the data points shown. (We will see the reason later.)
 
 my_plot_displ_hwy_year +
   facet_wrap(~manufacturer)
