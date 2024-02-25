@@ -1,7 +1,8 @@
 # ====================================
 # Time Series Analysis with R
 # gwendolin.wilke@fhnw.ch
-# 1.2 Plotting with ggplot and plotly
+# This script contains code used in 
+# Part 1, Lecture 1.2 Plotting with ggplot and plotly
 # ==================================== 
 
 # ====== Install and load necessary packages
