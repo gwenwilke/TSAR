@@ -257,7 +257,7 @@ sapply(people_list, toupper)
 # ====== mapply() for multiple arguments
 
 # The function + takes in 2 values as arguments
-1+1+1 # 3
+1+1 # 2
 
 # we can also write it in prefix notation
 '+'(1,1)

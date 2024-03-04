@@ -66,7 +66,7 @@ class(sapply(my_list, mean)) # numeric (thus, it's a vector: the most basic obje
 
 # Calculate the respective quartiles of observationA and observationB . First use lapply, then use sapply(). 
 # What class are the respective output objects?
-#   Hint: you can get the quantiles using the function quantile(). 
+#   Hint: you can get the quartiles using the function quantile(). 
 #   Remark: While mean returns a single value, quantile() returns a vector.
 lapply(my_list, quantile)
 sapply(my_list, quantile)
@@ -78,10 +78,10 @@ class(sapply(my_list, quantile)) # a 4x2 matrix
 log(my_list[[2]])
 
 # Create the function my_transformation <- function(x) { log10(x) - 1 }. 
-# Apply my_transformation() to each element of observationB. 
-# Hint: Notice that my_fun() is not vectorized!
+# Apply my_transformation() to each element of observationB.Try it first with vectorization, then with sapply().
 my_transformation <- function(x) { log(x) + 1 }
-sapply(my_list[[2]], my_transformation) # Note: Since my_transformation() is not vectorized, applying it directly as my_transformation(my_list[[2]]) throws an error.
+my_transformation(my_list[[2]]) # vectorized version
+sapply(my_list[[2]], my_transformation) # sapply version
 
 
 
