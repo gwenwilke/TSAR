@@ -12,13 +12,13 @@
 #install.packages("tidyverse")
 #install.packages("palmerpenguins")
 #install.packages("plotly") 
-#install.packages("Ggally") 
+#install.packages("GGally") 
 
 library(ggplot2) 
 library(tidyverse)
 library(palmerpenguins)
 library(plotly)
-library(Ggally)
+library(GGally)
 
 # Get a first impression of the data
 
