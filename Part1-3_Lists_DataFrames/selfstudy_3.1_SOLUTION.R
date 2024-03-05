@@ -62,9 +62,8 @@ length(letters_unique)
 #           Apply this test to your letters_vector. (Recycling vectorizes your test automatically!).
 length(letters_vector[letters_vector == "a"])
 
-# Now define a function `count_occurrences` that takes in two parameters: an arbitrary letter
-# and a sentence. The function should return how many times that letter
-# occurs in the provided sentence.
+# Now define a function count_occurrences that takes two parameters: an arbitrary letter and a sentence. 
+# The function should return the number of times letter occurs in sentence.
 #   Remark: Test your functino with your sentence and the letter "a".
 count_occurrences <- function(letter, sentence) {
   sentence <- tolower(sentence)
