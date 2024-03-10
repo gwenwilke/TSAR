@@ -6,7 +6,118 @@
 
 
 
-############  Task 1: Comparing base R and dplyr
+
+############ Task 1: Using dplyr for Grouping 
+
+# Install the `"nycflights13"` package if necessary. Load the package.
+# You'll also need to load `dplyr`.
+# install.packages("nycflights13")  # should be done already
+library("nycflights13")
+library("dplyr")
+
+# What was the average departure delay in each month?
+# Save this as a data frame `dep_delay_by_month`.
+#   Hint: you'll have to perform a grouping operation then summarizing your data
+dep_delay_by_month <- flights %>%
+                        group_by(month) %>% # creates a tibble that groups by month
+                        summarize(delay = mean(dep_delay, na.rm = TRUE)) # calculates the mean departure delay per month
+print(dep_delay_by_month)
+
+# Which month had the greatest average departure delay?
+filter(dep_delay_by_month, delay == max(delay)) %>% 
+  select(month)
+
+
+# If your data frame dep_delay_by_month contains only two columns (e.g., "month", and "delay" in that order), 
+# you can create a scatterplot simply by passing that data frame to the base R function `plot()` without specifying the axes.
+# Alternatively, you can use ggplot2 to create a scatterplot. 
+
+# With base R:
+plot(dep_delay_by_month) # notice that we only need to pass eth data frame as is!
+
+# With ggplot2:
+# In this case, ggplot is more effort!! (BUT it's easier to pimp your plot so that it looks nicer :-D )
+library(ggplot2)
+ggplot(dep_delay_by_month) + 
+  geom_point(mapping = aes(x = month, y = delay))
+
+
+# To which destinations were the average arrival delays the highest?
+#     Hint: you'll have to perform a grouping operation then summarize your data.
+#           You can use the `head()` function to view just the first few rows for checking.
+arr_delay_by_month <- flights %>%
+                        group_by(dest) %>%
+                        summarise(delay = mean(arr_delay, na.rm = TRUE)) %>%
+                        arrange(-delay)
+head(arr_delay_by_month)
+
+
+# The package nycflights13 also includes a data frame called "airports". 
+# You can look up the above destinations in the `airports` data frame!
+filter(airports, faa == arr_delay_by_month$dest[1]) # for example we can look up teh first destination, which is CAE.
+
+
+# Which city was flown to with the highest average speed?
+city_fasted_speed <- flights %>%
+                        mutate(speed = distance / air_time * 60) %>%
+                        group_by(dest) %>%
+                        summarise(avg_speed = mean(speed, na.rm = TRUE)) %>%
+                        filter(avg_speed == max(avg_speed, na.rm = TRUE))
+city_fasted_speed
+
+
+
+
+############ Task 2: Using the dplyr Join Operations
+
+# Install the `"nycflights13"` package if needed. Load the package.
+# You'll also need to load `dplyr`.
+
+# install.packages("nycflights13")  # should be done already
+library("nycflights13")
+library("dplyr")
+
+# Create a dataframe that holds the average arrival delays for each destination from the flights data frame. 
+# Then use left_join() to join the result on the airports  dataframe. 
+#     Remark: The airports  dataframe is also part of the nycflights13 package and holds information about the  airports.
+
+avg_delay <- flights %>%
+                group_by(dest) %>%    # creates it a tibble that groups rows by destination
+                summarise(avg_delay = mean(arr_delay, na.rm = TRUE))  # calculates the mean arrival delay per group
+
+avg_delay_dest <- avg_delay %>% 
+                            mutate(faa = dest) %>% # create a new column faa, so we can use it as join condition
+                            left_join(airports, by = "faa") 
+
+# Which airport had the largest average arrival delay?
+largest_arrival_delay <- avg_delay_dest %>% 
+                            filter(avg_delay == max(avg_delay, na.rm = TRUE)) 
+print(largest_arrival_delay) # CAE
+
+# Notice that we could have done all the above in one single statement using pipes!
+largest_arrival_delay <- flights %>%
+  group_by(dest) %>%
+  summarise(avg_delay = mean(arr_delay, na.rm = TRUE)) %>%
+  mutate(faa = dest) %>%
+  left_join(airports, by = "faa") %>%
+  filter(avg_delay == max(avg_delay, na.rm = TRUE))
+print(largest_arrival_delay)
+
+# Create a dataframe of the average arrival delay for each _airline_, then use
+# `left_join()` to join on the "airlines" dataframe (which is also part of the nycflights13 package).
+# Which airline had the smallest average arrival delay?
+smallest_airline_delay <- flights %>%
+  group_by(carrier) %>%
+  summarise(avg_delay = mean(arr_delay, na.rm = TRUE)) %>%
+  left_join(airlines, by = "carrier") %>%
+  filter(avg_delay == max(avg_delay, na.rm = TRUE))
+smallest_airline_delay
+
+
+
+
+
+############  Task 3: Comparing base R and dplyr
 
 # Install and load dplyr if needed.
 # install.packages("dplyr")
@@ -155,116 +266,6 @@ make_year_filter2 <- function(make_choice, year_choice) {
 make_year_filter("Honda", 1995)
 make_year_filter1("Honda", 1995)
 make_year_filter2("Honda", 1995)
-
-
-############ Task 2: Using the dplyr for Grouping 
-
-# Install the `"nycflights13"` package if necessary. Load the package.
-# You'll also need to load `dplyr`.
-# install.packages("nycflights13")  # should be done already
-library("nycflights13")
-library("dplyr")
-
-# What was the average departure delay in each month?
-# Save this as a data frame `dep_delay_by_month`.
-#   Hint: you'll have to perform a grouping operation then summarizing your data
-dep_delay_by_month <- flights %>%
-                        group_by(month) %>% # creates a tibble that groups by month
-                        summarize(delay = mean(dep_delay, na.rm = TRUE)) # calculates the mean departure delay per month
-print(dep_delay_by_month)
-
-# Which month had the greatest average departure delay?
-filter(dep_delay_by_month, delay == max(delay)) %>% 
-  select(month)
-
-
-# If your data frame dep_delay_by_month contains only two columns (e.g., "month", and "delay" in that order), 
-# you can create a scatterplot simply by passing that data frame to the base R function `plot()` without specifying the axes.
-# Alternatively, you can use ggplot2 to create a scatterplot. 
-
-# With base R:
-plot(dep_delay_by_month) # notice that we only need to pass eth data frame as is!
-
-# With ggplot2:
-# In this case, ggplot is more effort!! (BUT it's easier to pimp your plot so that it looks nicer :-D )
-library(ggplot2)
-ggplot(dep_delay_by_month) + 
-  geom_point(mapping = aes(x = month, y = delay))
-
-
-# To which destinations were the average arrival delays the highest?
-#     Hint: you'll have to perform a grouping operation then summarize your data.
-#           You can use the `head()` function to view just the first few rows for checking.
-arr_delay_by_month <- flights %>%
-                        group_by(dest) %>%
-                        summarise(delay = mean(arr_delay, na.rm = TRUE)) %>%
-                        arrange(-delay)
-head(arr_delay_by_month)
-
-
-# The package nycflights13 also includes a data frame called "airports". 
-# You can look up the above destinations in the `airports` data frame!
-filter(airports, faa == arr_delay_by_month$dest[1]) # for example we can look up teh first destination, which is CAE.
-
-
-# Which city was flown to with the highest average speed?
-city_fasted_speed <- flights %>%
-                        mutate(speed = distance / air_time * 60) %>%
-                        group_by(dest) %>%
-                        summarise(avg_speed = mean(speed, na.rm = TRUE)) %>%
-                        filter(avg_speed == max(avg_speed, na.rm = TRUE))
-city_fasted_speed
-
-
-
-
-############ Task 3: Using the dplyr Join Operations
-
-# Install the `"nycflights13"` package if needed. Load the package.
-# You'll also need to load `dplyr`.
-
-# install.packages("nycflights13")  # should be done already
-library("nycflights13")
-library("dplyr")
-
-# Create a dataframe that holds the average arrival delays for each destination from the flights data frame. 
-# Then use left_join() to join the result on the airports  dataframe. 
-#     Remark: The airports  dataframe is also part of the nycflights13 package and holds information about the  airports.
-
-avg_delay <- flights %>%
-                group_by(dest) %>%    # creates it a tibble that groups rows by destination
-                summarise(avg_delay = mean(arr_delay, na.rm = TRUE))  # calculates the mean arrival delay per group
-
-avg_delay_dest <- avg_delay %>% 
-                            mutate(faa = dest) %>% # create a new column faa, so we can use it as join condition
-                            left_join(airports, by = "faa") 
-
-# Which airport had the largest average arrival delay?
-largest_arrival_delay <- avg_delay_dest %>% 
-                            filter(avg_delay == max(avg_delay, na.rm = TRUE)) 
-print(largest_arrival_delay) # CAE
-
-# Notice that we could have done all the above in one single statement using pipes!
-largest_arrival_delay <- flights %>%
-  group_by(dest) %>%
-  summarise(avg_delay = mean(arr_delay, na.rm = TRUE)) %>%
-  mutate(faa = dest) %>%
-  left_join(airports, by = "faa") %>%
-  filter(avg_delay == max(avg_delay, na.rm = TRUE))
-print(largest_arrival_delay)
-
-# Create a dataframe of the average arrival delay for each _airline_, then use
-# `left_join()` to join on the "airlines" dataframe (which is also part of the nycflights13 package).
-# Which airline had the smallest average arrival delay?
-smallest_airline_delay <- flights %>%
-  group_by(carrier) %>%
-  summarise(avg_delay = mean(arr_delay, na.rm = TRUE)) %>%
-  left_join(airlines, by = "carrier") %>%
-  filter(avg_delay == max(avg_delay, na.rm = TRUE))
-smallest_airline_delay
-
-
-
   
 
 
