@@ -129,13 +129,23 @@ print(votes_colorado_2008, n=40)
 # Also add an `abs_vote_difference` column of the absolute difference between percentages.
 #   Note you can use columns as you create them!
 presidentialElections <- mutate(presidentialElections,
-       other_parties_vote = 100 - demVote, # other parties is 100% - Democrat % 
-       abs_vote_difference = abs(demVote - other_parties_vote)
+                                other_parties_vote = 100 - demVote, # other parties is 100% - Democrat % 
+                                abs_vote_difference = abs(demVote - other_parties_vote)
 )
 print(presidentialElections)
 
+# Note: You can also use mutate() to change / overwrite an existing column with a new one.
+#     To exemplify, we change the column 'year' from int format to date format. 
+#     Since as.Date() takes char as input, we first change int to char using as.character(). 
+#     Then we use paste() to add a month (01) and a day (01) to each year. - This is necessary since a year alone does not make a date. It would be misinterpreted by as.Date() - e.g. try as.Date("1932", format = "%Y")
+#     Next we apply as.Date(). With the result we change / overwrite the original 'year' column.
+presidentialElections <- mutate(presidentialElections, 
+                                year = as.Date(paste(as.character(year), "-1-1", sep = "")) # change the column 'year' to Date fromat
+                                )
+print(presidentialElections)
+
 # Renaming a column using rename(data, new_name = old_name)
-rname(presidentialElections, DemocratesVote = demVote)
+rename(presidentialElections, DemocratesVote = demVote)
 
 
 
