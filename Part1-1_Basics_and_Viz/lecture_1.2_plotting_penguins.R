@@ -354,13 +354,13 @@ ggplot(data = penguins) +
 
 # ====== Mapping versus Setting
 
-# mapping the value of species to the color channel
+# MAPPING the value of species to the color channel
 ggplot(data = penguins) +
   geom_point(mapping = aes(x = body_mass_g,
                            y = bill_length_mm,
                            color = species)) 
 
-# setting the color to the fixed value "red" 
+# SETTING the color to the fixed value "red" 
 ggplot(data = penguins) +
   geom_point(mapping = aes(x = body_mass_g,
                            y = bill_length_mm),
