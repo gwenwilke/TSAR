@@ -44,20 +44,23 @@ ggplot(data = penguins,
        mapping = aes(x = bill_depth_mm,
                      y = bill_length_mm))
 
-# Represent each observation with a point
+# At a geometry layer using the "+" that specifies HOW we want to represent the data:
+# We use geom_point() to represent each observation by a point.
 ggplot(data = penguins,
        mapping = aes(x = bill_depth_mm,
                      y = bill_length_mm)) + 
 geom_point()
 
-# map species to the colour 
+# In the aesthetic mapping, we add another channel to the plot 
+# We map species to the colour channel.
 ggplot(data = penguins,
        mapping = aes(x = bill_depth_mm,
                      y = bill_length_mm,
                      colour = species)) +
   geom_point()
 
-# Title the plot "Bill depth and length"
+# Add labels (labs): 
+# Add a title  
 ggplot(data = penguins,
        mapping = aes(x = bill_depth_mm,
                      y = bill_length_mm,
@@ -65,7 +68,8 @@ ggplot(data = penguins,
   geom_point() +
   labs(title = "Bill depth and length")
 
-# Add the subtitle "Dimensions for Adelie, Chinstrap, and Gentoo Penguins"
+# Add labels (labs): 
+# Add a subtitle 
 ggplot(data = penguins,
        mapping = aes(x = bill_depth_mm,
                      y = bill_length_mm,
@@ -74,7 +78,8 @@ ggplot(data = penguins,
   labs(title = "Bill depth and length",
        subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins")
 
-# label the x and y axes as "Bill depth (mm)" and "Bill length (mm)"
+# Add labels (labs):
+# Make labels for x and y axes nicer
 ggplot(data = penguins,
        mapping = aes(x = bill_depth_mm,
                      y = bill_length_mm,
@@ -84,7 +89,9 @@ ggplot(data = penguins,
        subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
        x = "Bill depth (mm)", y = "Bill length (mm)")
 
-# label the legend "Species"
+
+# Add labels (labs):
+# Make the legend title for the color channel nicer
 ggplot(data = penguins,
        mapping = aes(x = bill_depth_mm,
                      y = bill_length_mm,
@@ -96,7 +103,8 @@ ggplot(data = penguins,
        y = "Bill length (mm)",
        colour = "Species") 
 
-# add a caption for the data source
+# Add labels (labs):
+# Add a caption for the data source
 ggplot(data = penguins,
        mapping = aes(x = bill_depth_mm,
                      y = bill_length_mm,
@@ -108,8 +116,8 @@ ggplot(data = penguins,
        colour = "Species",
        caption = "Source: Palmer Station LTER / palmerpenguins package") 
 
-
-# Finally, use a discrete colour scale that is designed to be perceived by viewers with common forms of colour blindness
+# "Scale" the colour channel with a colour-blind friendly paletteh
+# Change the colour scale for viewers with colour blindness
 ggplot(data = penguins,
        mapping = aes(x = bill_depth_mm,
                      y = bill_length_mm,
@@ -142,7 +150,7 @@ ggplot(penguins,                      # unnamed argument "data"
   scale_colour_viridis_d()
 
 
-# ====== Some Geoms
+# ====== Some "Geoms"
 
 
 # == 1D numerical
@@ -151,15 +159,15 @@ ggplot(penguins,                      # unnamed argument "data"
 ggplot(data = penguins) +
   geom_histogram(mapping = aes(x = bill_length_mm)) 
 
-# bill length frequency distribution (histogram)
-ggplot(data = penguins) +
+# bill length density plot 
+ggplot(data = penguins)  +
   geom_density(mapping = aes(x = bill_length_mm)) # note the different scale on y-axes compared to histogram
 
-# bill length frequency distribution (boxplot)
+# bill length boxplot
 ggplot(data = penguins) +
   geom_boxplot(mapping = aes(y = bill_length_mm)) 
 
-# bill length frequency distribution (violin)
+# bill length violin plot
 ggplot(data = penguins) +
   geom_violin(mapping = aes(x = "",
                             y = bill_length_mm)) 
