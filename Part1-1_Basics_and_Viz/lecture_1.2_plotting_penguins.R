@@ -168,14 +168,29 @@ ggplot(data = penguins) +
   geom_boxplot(mapping = aes(y = bill_length_mm)) 
 
 # bill length violin plot
+# violin plots are density plots that are mirrored and flipped to look like violins.
 ggplot(data = penguins) +
   geom_violin(mapping = aes(x = "",
                             y = bill_length_mm)) 
 
-# you can add the quantile markers to the violin plot, 
-# and not trim the tails of the violins
+# For better visualization, we can also not trim the tails of the violins (which is the default).
+ggplot(data = penguins) +
+  geom_violin(mapping = aes(x = "",
+                            y = bill_length_mm),
+              trim = FALSE) 
+
+# One advantage of violin plots over density plots is that you can show more than one of them in a single picture.
+# E.g., here, we split them up according to the value of the categorical variable species.
+# Note that this is already a 2D plot now, because it shows 2 different dimensions: bill length (numerical) and species (categorical).
+ggplot(data = penguins) +
+  geom_violin(mapping = aes(x = species,
+                            y = bill_length_mm),
+              trim = FALSE)
+
+# Another advantage is that you can add quantile markers.
+# In this way, you can combine a density plot with a boxplot.
 ggplot(data = penguins, 
-       mapping = aes(x = "",
+       mapping = aes(x = species,
                      y = bill_length_mm)) +
   geom_violin(trim = FALSE, 
               draw_quantiles = c(0.25, 0.5, 0.75)) 
@@ -183,19 +198,20 @@ ggplot(data = penguins,
 
 # == 1D categorical variables
 
+
 # island count
 ggplot(data = penguins) +
   geom_bar(mapping = aes(x = island)) 
 
-# species count
+# island count with flipped coordinate system using coord_flip()
 ggplot(data = penguins) +
-  geom_bar(mapping = aes(x = species)) +
+  geom_bar(mapping = aes(x = island)) +
   coord_flip()
 
 
 # == 2D numerical 
 
-# scatterplot: bill length vs. body mass
+# scatter plot: bill length vs. body mass
 ggplot(data = penguins,
        mapping = aes(x = body_mass_g,
                      y = bill_length_mm)) +
@@ -223,34 +239,49 @@ ggplot(data = penguins,
 
 
 # column plot: (sum of) bill length per sex
-# Note: a column plot uses actual values per category, 
-#       while a bar plot counts the number of observations per category.
+# Note: In contrast to bar plot, a column plot uses actual values of another variable per category. 
+#       A bar plot counts the NUMBER of observations per category.
 ggplot(data = penguins) +
   geom_col(mapping = aes(x = sex,
                          y = bill_length_mm)) 
 
-# column plot: (sum of) bill length per island
+# Note: Here, the y-axis shows the SUM of bill length per category, which is a bit useless.
+#       If you want to show the MEAN bill length per sex instead, 
+#       you can use a statistical layer, such as stat_summary() instead of geom_col()
+#       You can specify the type of summary statistic you want to compute and display, 
+#       such as the mean, median, or also custom functions.
+#       Here, we use fun = "mean".
 ggplot(data = penguins) +
-  geom_col(mapping = aes(x = island,
-                         y = bill_length_mm))
+  stat_summary(mapping = aes(x = sex, 
+                             y = bill_length_mm), 
+               fun = "mean", 
+               geom = "col")
 
-# column plot: (sum of) bill length per species
+# With "geom = " you can specify the geometry you want to use to display the summary statistic.
+# E.g., we can change it to geom = "point".
 ggplot(data = penguins) +
-  geom_col(mapping = aes(x = species,
-                         y = bill_length_mm))
-
+  stat_summary(mapping = aes(x = sex, 
+                             y = bill_length_mm), 
+               fun = "mean", 
+               geom = "point")
 
 # boxplot per category: bill length per sex
 ggplot(data = penguins) +
   geom_boxplot(mapping = aes(x = sex,
-                         y = bill_length_mm)) 
+                             y = bill_length_mm)) 
 
-# violin plot  per category: bill length per sex
+# Combining 2 geom layers in one picture:
+#   E.g., here, we combine boxplots (which show the median) and points (which show the mean).
 ggplot(data = penguins) +
-  geom_violin(mapping = aes(x = sex,
-                             y = bill_length_mm))
+  geom_boxplot(mapping = aes(x = sex,
+                         y = bill_length_mm)) +
+  stat_summary(mapping = aes(x = sex, 
+                             y = bill_length_mm), 
+               fun = "mean", 
+               geom = "point")
 
-# violin plot per category: bill length per sex (with quantiles and untrimmed tails)
+# Combining 2 geom layers in one picture: 
+# E.g., here, we combine violin plots and box plots per sex
 ggplot(data = penguins, 
        mapping = aes(x = sex,
                      y = bill_length_mm)) +
@@ -259,8 +290,9 @@ ggplot(data = penguins,
   geom_boxplot(width=0.1)
 
 
-# histogram, stacked by category: binned bill length stacked by per sex 
-# (with sex on the color channel)
+# bill_length (numerical, binned in a histogram) stacked by per sex (categorical)
+# Note:   Here, the second variable (sex) is not on the y-axes, but on the color channel.
+#         The y-axes is already used up by the frequency count of the histogram plot
 ggplot(data = penguins) +
   geom_histogram(mapping = aes(x = bill_length_mm, 
                                colour=sex)) 
@@ -276,9 +308,10 @@ ggplot(data = penguins,
                      color = species)) +
   geom_point() 
 
-# scatterplot & polynomial trendline (plottet on top of each other)
-#   - scatterplot: bill length vs. body mass, color by species
-#   - polynomoial trendline: bill length vs. body mass, color by per species 
+# Combining 2 geom layers in one picture:
+# Here, a scatterplot and a polynomial trendline are combined (plottet on top of each other)
+#   - scatterplot: bill length vs. body mass, colored by species
+#   - polynomoial trendline: bill length vs. body mass, colored by per species 
 ggplot(data = penguins,
        mapping = aes(x = body_mass_g,
                      y = bill_length_mm,
@@ -286,9 +319,9 @@ ggplot(data = penguins,
   geom_point() +
   geom_smooth()
 
-# scatterplot & polynomial trendline (plottet on top of each other)
-#   - scatterplot: bill length vs. body mass, color by species
-#   - polynomoial trendline: bill length vs. body mass, no color channel
+# If we add the color channel only to geom:point(), 
+# the trendline will not be colored by species. 
+# It will show the overall trend for all species together.
 ggplot(data = penguins,
        mapping = aes(x = body_mass_g,
                      y = bill_length_mm)) +
@@ -306,8 +339,13 @@ ggplot(data = penguins) +
   geom_bar(mapping = aes(x = island, 
                          y = stat(count)))
 
-# island count in % of largest population
-# Note the change in the y-axes scaling: Percentages instead of counts
+# Instead of using stat_summary() to compute a summary statistics we want to display, 
+# we can alternatively use stat().
+# Note: stat() provides a low-level interface to define any statistical transformation.
+#       You must use WITHIN the aestetic mapping. It is not a standalone layer, 
+#       but a function that you can use to specify the type of statistical transformation you want to apply to the data before plotting it.
+# E.g., here we use it to calculate percentages.
+# Note the change of scale in the y-axes!
 ggplot(data = penguins) +
   geom_bar(mapping = aes(x = island, 
                          y = stat(count/max(count)*100))) 
