@@ -123,8 +123,8 @@ person$salary <- NULL
 print(person)
 
 # Selecting non-existing list elements
-person$address # NULL
-person[[6]] # error
+person$address # NULL (SELECTING with $-notation )
+person[[6]] # error (SELECTING with double bracket notation)
 
 
 # ====== NULL and NA are special values
@@ -138,7 +138,18 @@ print(my_list)
 # Note: vectors behave a bit differently with NA and NULL
 my_vector <- 1:5
 print(my_vector)
-my_vector[4] <- NULL # error: you cant remove a vector element by assigning NULL. The reason is that, once defined, vectors have a fixed length.
+my_vector[4] <- NULL # error: you cant remove a vector element by assigning NULL. 
+                     # # Object-oriented approach using S3 classes
+setClass("NumberList", representation(numbers = "list"))
+
+setMethod("square", "NumberList", function(x) {
+  lapply(x@numbers, function(y) y^2)
+})
+
+# Create an object of class NumberList
+num_list <- new("NumberList", numbers = list(1, 2, 3, 4, 5))
+squared_numbers <- square(num_list)
+print(squared_numbers)The reason is that, once defined, vectors have a fixed length.
 my_vector[3] <- NA # But you can replace an element by "nothing" (insert a missing value)
 print(my_vector)
 
@@ -201,7 +212,7 @@ lapply(people, paste, "dances!")
 # ====== unlist() to convert a list into a vector
 
 lapply(person, class) # output is a list of character strings
-unlist(lapply(person, class)) # coerce the list into a vector
+unlist(lapply(person, class)) # coerce the list into a named vector
 
 lapply(people, toupper) # output is a list of character strings
 unlist(lapply(people, toupper)) # coerce the list into a vector
@@ -212,67 +223,24 @@ unlist(lapply(div_vectors_list, mean)) # coerce the list into a vector
 
 # ====== The *apply() family of functions
 
-# sapply() as a shortcut for unlist(lapply())
-unlist(lapply(person, class))
+# sapply() is often used as a shortcut for unlist(lapply())
+# This works because the output of lapply() is a vector of length 1 (i.e., a simple data structure)
+lapply(person, class) # lapply produces a list of vectors of length 1
+unlist(lapply(person, class)) # Thus sapply can unlist it.
 sapply(person, class)
 
-# sapply() falling back to a list output
+# Yet, if we have a complex data structure, sapply() cannot unlist it.
+# Instead, it falls back to returning a list.
 
-strsplit("gwen", split = "") # demonstrating strsplit: with an empty split pattern, the string is split into single characters and returned as a list
-single_chars_vector <- function(s){   # Creating a function 
-  unlist(strsplit(s, split = ""))     # applying unlist() to get a vector of single characters
-}
-sapply(people, single_chars_vector) # The output element are vectors, i.e. complex data structures. 
+# Demonstrating strsplit(): 
+#   - With an empty split pattern, the string is split into single characters. 
+#   - The result is a 1-element list that contains a vector of length 4, i.e., a complex data structure:
+strsplit("gwen", split = "") 
 
+# In this case, sapply() cannot unlist it.
+# Instad it returns a list.
+sapply("gwen", strsplit, split = "") 
 
-# sapply returning a matrix
-people <- list("Sarah", "Amit", "Zhang") # recreating the peoples list
-names(people) <- c("person1", "person2", "person3") # assigning labels to its elements
-print(people)
-
-unlist(strsplit("gwen", split = ""))[1] # demonstrating how to extract the first letter from a string
-first_two_letters <- function(s){            # Writing a function that extracts the first 2 letters
-  letters <- unlist(strsplit(s, split = ""))
-  first <- letters[1]
-  second <- letters[2]
-  c(first = first,second = second)
-}
-first_two_letters("gwen") # the output is a vector of length 2
-sapply(people, first_two_letters) # thus sapply returns a 2x3 matrix
-
-
-# lapply() and sapply() can be applied to both, lists and vectors.
-# To try out, we create a list and a vector of people:
-people_vector <- c("Sarah", "Amit", "Zhang")
-people_list <- list("Sarah", "Amit", "Zhang")
-
-# lapply() always returns a list:
-lapply(people_vector, toupper)
-lapply(people_list, toupper)
-
-# sapply() always returns a vector:
-sapply(people_vector, toupper)
-sapply(people_list, toupper)
-
-# ====== mapply() for multiple arguments
-
-# The function + takes in 2 values as arguments
-1+1 # 2
-
-# we can also write it in prefix notation
-'+'(1,1)
-
-# As all base R functions, it is vectorized
-v1 <- 1:3
-v2 <- 1:3
-'+'(v1,v2) # 2 4 6
-mapply('+', v1, v2) # 2 4 6
-
-# It also works for lists
-l1 <- list(1,2,3)
-l2 <- list(1,2,3)
-'+'(l1,l2) # error
-mapply('+', l1, l2) # 2 4 6
 
 
 
