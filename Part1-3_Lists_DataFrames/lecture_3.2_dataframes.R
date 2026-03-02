@@ -9,16 +9,21 @@
 # ====== Create a data frame by passing vectors to the `data.frame()` function
 
 # A vector of names
-name <- c("Ada", "Bob", "Chris", "Diya", "Emma") # A vector of heights
-height <- c(64, 74, 69, 69, 71) # A vector of weights
-weight <- c(135, 156, 139, 144, 152)
+name <- c("Ada", "Bob", "Chris", "Diya", "Emma") 
+
+# A vector of heights
+height <- c(64, 74, 69, 69, 71) 
+
+# A vector of weights
+weight <- c(135, 156, 139, 144, 152) 
 
 # Combine the vectors into a data frame
 # Note the names of the variables become the names of the columns! 
-people <- data.frame(name, height, weight, stringsAsFactors = FALSE)
+people <- data.frame(name, height, weight)
 
 
 # ====== Create the data frame directly, specifying column names to use
+
 people <- data.frame(
   name = c("Ada", "Bob", "Chris", "Diya", "Emma"), 
   height = c(64, 74, 69, 69, 71),
@@ -38,7 +43,7 @@ rownames(people) # [1] "1" "2" "3" "4" "5"
 # Assign a set of row names for the vector 
 # (using the values in the `name` column) 
 rownames(people) <- people$name
-print(people)
+print(people) # row names are now the same as the names in the `name` column
 
 # Create a vector of new column names
 new_col_names <- c("first_name", "how_tall", "how_heavy")
@@ -51,7 +56,8 @@ print(people)
 # ====== Selecting and Filtering for Columns Using List-Syntax
 
 # Recreate the original data frame
-people <- data.frame(name, height, weight, stringsAsFactors = FALSE) 
+people <- data.frame(name, height, weight) 
+
 # Name the rows
 rownames(people) <- c("Patient1", "Patient2", "Patient3", "Patient4", "Patient5")
 print(people)
@@ -145,7 +151,7 @@ print(people)
 
 # ====== Appending Columns to a Data Frame
 
-# Adding a column by specifying a new column vector using dollar-notation
+# Adding a single column by specifying a new column vector using dollar-notation
 people$pulse <- c(NA, 55, 82, 71, NA, 92, 55, 64, 68, 74)
 print(people)
 
@@ -165,17 +171,17 @@ print(people)
 # Demonstrate the creation of a factor variable
 # Start with a character vector of shirt sizes
 shirt_sizes <- c("small", "medium", "small", "large", "medium", "large") 
+typeof(shirt_sizes) # "character"
 
 # Create a factor representation of the vector
 shirt_sizes_factor <- as.factor(shirt_sizes)
+typeof(shirt_sizes_factor) # "integer" (factors are stored as integers under the hood)
 
 # View the factor and its levels
-print(shirt_sizes_factor) 
-# [1] small medium small large medium large 
-# Levels: large medium small
+print(shirt_sizes_factor) # Levels: large medium small
 
 # The length of the factor is still the length of the vector, 
-# not the number of levels
+# not the number of levels!
 length(shirt_sizes_factor) # 6
 
 
@@ -186,23 +192,21 @@ length(shirt_sizes_factor) # 6
 num_factors <- as.factor(c(10, 10, 20, 20, 30, 30, 40, 40))
 
 # Print the factor to see its levels
-print(num_factors)
-# [1] 10 10 20 20 30 30 40 40 
-# Levels: 10 20 30 40
+print(num_factors) # Levels: 10 20 30 40
 
-# Multiply the numbers by 2
-num_factors * 2 
-# Warning Message: '*' not meaningful for factors # Returns vector of NA instead
+# Try to multiply by 2
+num_factors * 2  # Warning Message: '*' not meaningful for factors # Returns vector of NA instead
 
-# Changing entry to a level is fine
+# Changing an entry to an existing level is fine
+num_factors
 num_factors[1] <- 40
+num_factors
 
-# Change entry to a value that ISN'T a level fails
-num_factors[1] <- 50 
-# Warning Message: invalid factor level, NA generated
+# Changeing an entry to a value that IS NOT a level will fail!
+num_factors[1] <- 50  # Warning Message: invalid factor level, NA generated
 
 # num_factors[1] is now NA
-print(num_factors)
+num_factors
 
 #### For data frames, this can generate a problem when new data needs to be added:
 
@@ -212,31 +216,39 @@ shirt_size <- c("small", "medium", "small", "large", "medium", "large")
 # Create a vector of costs (in dollars)
 cost <- c(15.5, 17, 17, 14, 12, 23)
 
-# Create a data frame of inventory and set stringsAsFactors to TRUE
-shirts_factor <- data.frame(shirt_size, cost, stringsAsFactors = TRUE)
+# Create a data frame of inventory 
+shirts <- data.frame(shirt_size, cost)
+
+# Change the shirt_size column to a factor variable and create a new data frame
+shirt_size_factor <- as.factor(shirt_size)
+shirts_factor <- data.frame(shirt_size_factor, cost)
+
+str(shirts) # shirt_size is a NOT a factor variable
+str(shirts_factor) # shirt_size_factor is a factor variable
 
 # Confirm that the `shirt_size` column is a factor
 is.factor(shirts_factor$shirt_size) # TRUE
 
-# Therefore, you are unable to add a new size like "extra-large"
+# In the data frame shirts_factor, you are unable to add a new size like "extra-large"
 shirts_factor[1, 1] <- "extra-large"
 # Warning: invalid factor level, NA generated
-
+shirts_factor
 
 # ======  Factors are useful for grouping
 
-# Produce a list of data frames, one for each factor level
-#   first argument is the data frame to split
-# second argument the data frame to is the factor to split by 
-shirt_size_frames <- split(shirts_factor, shirts_factor$shirt_size)
-print(shirt_size_frames)
+# the function split() produces a list of data frames, one for each factor level
+#     - first argument is the data frame to split
+#     - second argument the data frame to is the factor to split by 
+shirts_factor
+split(shirts_factor, shirts_factor$shirt_size)
+
 
 # ======  Specialized functions exist for factors
 
 # Apply a function (mean) to each factor level
-#   first argument is the vector to apply the function to
-#   second argument is the factor to split by
-#   third argument is the name of the function 
+#     - first argument: vector to apply the function to
+#     - second argument: the factor to split by
+#     - third argument: name of the function to apply to each factor level
 tapply(shirts_factor$cost, shirts_factor$shirt_size, mean)
 
 
